@@ -10,8 +10,9 @@ const useCollection = (collection) => {
     isPending.value = true
 
     try {
-      await projectFirestore.collection(collection).add(chatDoc)
+      const res = await projectFirestore.collection(collection).add(chatDoc)
       isPending.value = false
+      return res
     }
     catch (err) {
       console.error(err.message)

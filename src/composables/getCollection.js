@@ -1,11 +1,15 @@
 import { ref, watchEffect } from 'vue'
 import { projectFirestore } from '../firebase/config'
 
-const getCollection = (collection) => {
+const getCollection = (collection, query) => {
   const error = ref(null)
-  const chatDocs = ref(null)
+  const documents = ref(null)
 
-  const collectionRef = projectFirestore.collection(collection).orderBy('createdAt')
+  let collectionRef = projectFirestore.collection(collection).orderBy('createdAt')
+
+  if (query) {
+    collectionRef = collectionRef.where(...query)
+  }
 
   const unsub = collectionRef.onSnapshot(snap => {
     const results = []
@@ -15,11 +19,11 @@ const getCollection = (collection) => {
         id: doc.id,
       })
     })
-    chatDocs.value = results
+    documents.value = results
     error.value = null
   }, err => {
     console.error(err.message)
-    chatDocs.value = null
+    documents.value = null
     error.value = 'Could not fetch data'
   })
 
@@ -28,7 +32,7 @@ const getCollection = (collection) => {
     onInvalidate(() => unsub())
   })
 
-  return { chatDocs, error }
+  return { documents, error }
 }
 
 export default getCollection

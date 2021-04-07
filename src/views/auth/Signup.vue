@@ -13,10 +13,12 @@
 <script>
 import useSignup from '@/composables/useSignup'
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 export default {
   setup () {
     const { error, signup, isPending } = useSignup()
+    const router = useRouter()
 
     const email = ref('')
     const password = ref('')
@@ -26,6 +28,7 @@ export default {
       const res = await signup(email.value, password.value, displayName.value)
       if (!error.value) {
         console.log('User created')
+        router.push({ name: 'UserPlaylists' })
       }
     }
     return { email, error, password, handleSignup, isPending, displayName }
